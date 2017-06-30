@@ -1,7 +1,6 @@
-# 无服务器架构
+# 无服务器架构（Serverless Architectures）
 
-> 译注1：本文原文发表在 [martinfowler.com](http://martinfowler.com/) 上，对 Serverless 架构做了系统的阐述。为了便于参考，“Serverless”、“BaaS” 等术语文中不做翻译。
-
+> 译注1：本文原文发表在 [martinfowler.com](http://martinfowler.com/) 上，对 Serverless 架构做了系统的阐述。为了便于参考，“Serverless”、“BaaS” 等术语文中不做翻译。  
 > 译注2：翻译中。原文太长，并且按照 martinfowler.com 的 bliki 模式保持更新，这里尽量保持跟进。
 
 原文：http://martinfowler.com/articles/serverless.html  
@@ -121,7 +120,7 @@ FaaS 函数可以执行的时间通常都是受限的，目前 AWS Lambda 函数
 
 ### API 网关
 
-![](http://martinfowler.com/articles/serverless/ag.svg)
+![API Gateway](http://martinfowler.com/articles/serverless/ag.svg)
 
 我们前面还碰到过一个 FaaS 的概念：“API 网关”。API 网关是一个配置了路由的 HTTP 服务器，每个路由对应一个 FaaS 函数，当 API 网关收到请求时它找到匹配请求的路由，调用相应的 FaaS 函数。通常 API 网关还会把请求参数转换成 FaaS 函数的调用参数。最后 API 网关把 FaaS 函数执行的结果返回给请求来源。
 
@@ -137,8 +136,33 @@ AWS 有自己的一套 API 网关，其他平台也大同小异。
 
 前面关于工具链还不成熟的说法是指大体上 FaaS 无服务器架构平台的情况，也有例外，[Auth0 Webtask](https://webtask.io/) 就很重视改善开发者体验，[Tomasz Janczuk](https://twitter.com/tjanczuk) 在最近一届的 Serverless Conf 上做了精彩的展示。
 
-无服务器应用的监控和调试还是有点棘手，我们会在本文未来的更新中进一步探讨这一点。
+无服务器应用的监控和调试还是有点棘手，我们会在本文未来的更新中进一步探讨这方面。
 
-## 开源
+### 开源
 
-无服务器 FaaS 的一个主要好处就是只需要近乎透明的运行时启动调度，所以这个领域不像 Docker 或者容器领域那么依赖开源。未来肯定会有一些流行的 FaaS / API 网关平台实现可以跑在私有服务器或者开发者工作站上，[IBM 的 OpenWhisk](http://martinfowler.com/articles/serverless.html)
+无服务器 FaaS 的一个主要好处就是只需要近乎透明的运行时启动调度，所以这个领域不像 Docker 或者容器领域那么依赖开源实现。未来肯定会有一些流行的 FaaS / API 网关平台实现可以跑在私有服务器或者开发者工作站上，[IBM 的 OpenWhisk](http://martinfowler.com/articles/serverless.html) 就是一个这样的实现，不知道它是否能成为流行选择，接下来的时间里肯定会有更多竞争者出现。
+
+除了运行时的平台实现，还是有不少开源工具用以辅助开发和部署的，例如 [Serverless Framework](https://github.com/serverless/serverless) 在 API 网关 + Lambda 的易用性上就比它的原创者 AWS 要好很多，这是一个 JS 为主的项目，如果你在写一个 JS 网关应用一定要去了解下。
+
+再如 [Apex](https://github.com/apex/apex)——“轻松创建、部署及管理 AWS Lambda 函数”。Apex 有意思的一点是它允许你用 AWS 平台并不直接支持的语言来实现 Lambda 函数，比如 Go。
+
+## 什么不是 Serverless
+
+在前文中我定义了 “Serverless” 是两个概念的组合：“Backend as a Service” 和 “Function as a Service”，并且对后者的特性做了详细解释。
+
+在我们开始探讨它的好处和弊端之前，我想再花点儿时间在它的定义上，或者说：区分开那些容易和 Serverless 混淆的概念。我看到一些人（包括我自己最近）对此都有困惑，我想值得对此做个澄清。
+
+### 对比 PaaS
+
+既然 Serverless FaaS 这么像 12-Factor 应用，那不就是另一种形式的 Platform as a Service 么？就像 Heroku？对此借用 Adrian Cockcroft 一句非常简明的话：
+
+> 如果你的 PaaS 能在 20ms 内启动一个只运行半秒钟的实例，就叫它 Serverless。
+> — [Adrian Cockcroft](https://twitter.com/adrianco/status/736553530689998848)
+
+换句话说，大部分 PaaS 应用都不会为了每个请求都启动并结束整个应用，而 FaaS 就是这么做的。
+
+好吧，然而假设我是个娴熟的 12-Factor 应用开发者，写代码的方式还是没有区别对么？没错，但是你如何**运维**是有很大不同的。鉴于我们都是 DevOps 工程师我们会在开发阶段就充分考虑运维，对吧？
+
+FaaS 和 PaaS 在运维上的关键区别是**伸缩性**。对于大多数 PaaS 平台而言你需要考虑
+
+**未完待续**
