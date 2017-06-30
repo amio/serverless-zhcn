@@ -1,0 +1,144 @@
+# 无服务器架构
+
+> 译注1：本文原文发表在 [martinfowler.com](http://martinfowler.com/) 上，对 Serverless 架构做了系统的阐述。为了便于参考，“Serverless”、“BaaS” 等术语文中不做翻译。
+
+> 译注2：翻译中。原文太长，并且按照 martinfowler.com 的 bliki 模式保持更新，这里尽量保持跟进。
+
+原文：http://martinfowler.com/articles/serverless.html  
+作者：[Mike Roberts](https://twitter.com/mikebroberts)
+
+## 引言
+
+> Serverless architectures refer to applications that significantly depend on third-party services (knows as Backend as a Service or "BaaS") or on custom code that's run in ephemeral containers (Function as a Service or "FaaS"), the best known vendor host of which currently is AWS Lambda. By using these ideas, and by moving much behavior to the front end, such architectures remove the need for the traditional 'always on' server system sitting behind an application. Depending on the circumstances, such systems can significantly reduce operational cost and complexity at a cost of vendor dependencies and (at the moment) immaturity of supporting services.
+
+Severless 现在是软件架构圈中的热门话题，涌现出了数不清的相关书籍、开源框架、商业产品，甚至还有专注于这个话题的[大会](http://serverlessconf.io/)。什么是 Serverless？它有那些特性值得/不值得考量？通过[持续更新](http://martinfowler.com/bliki/EvolvingPublication.html)的本文，我希望对这些问题做出解答。
+
+开篇我们先来看看 Serverless 是什么，之后我会尽我所能中立地谈谈它的优势和缺点。
+
+## 什么是 Serverless
+
+就像软件行业中的很多趋势一样，Serverless 的界限并不是特别清晰，尤其是它还涵盖了两个互相有重叠的概念：
+
+- Serverless 最早用于描述那些大部分或者完全依赖于第三方（云端）应用或服务来管理服务器端逻辑和状态的应用，这些应用通常是富客户端应用（单页应用或者移动端 App），建立在云端服务生态之上，包括数据库（Parse、Firebase）、账号系统（Auth0、AWS Cognito）等。这些服务最早被称为 [“(Mobile) Backend as a Service”](https://en.wikipedia.org/wiki/Mobile_backend_as_a_service)，下文将对此简称为 “**BaaS**”。
+- Serverless 还可以指代这种情况：应用的一部分服务端逻辑依然由开发者完成，但是不像传统架构那样运行在一个无状态的计算容器中，而是由事件驱动、短时执行（甚至只有一次调用）、完全由第三方管理（感谢 ThoughtWorks 在他们最近的“[技术观察](https://www.thoughtworks.com/radar/techniques/serverless-architecture)”中对此所做的定义）。对此有一个叫法是 [Functions as a service](https://twitter.com/marak/status/736357543598002176) / FaaS。[AWS Lambda](https://aws.amazon.com/lambda/) 是目前的热门 FaaS 实现之一，下文将对此简称为 “**FaaS**”。
+
+【边栏注释：Serverless 的起源】
+
+我接下来要谈的主要是第二种情况，因为这个概念更新颖，也和我们传统考虑的技术架构大相径庭，并且也是目前最被热炒的 Serverless 概念。
+
+不过这些概念实际上是相关、甚至有交叉的。[Auth0](https://auth0.com/) 就是个好例子——他们最初是一个 BaaS 服务：“Authentication as a Service”，但是随着 [Auth0 Webtask](https://webtask.io/) 的推出，他们也进入了 FaaS 的领域。
+
+并且在很多情况下，开发一个 “BaaS” 应用尤其是富 Web 应用（相对于移动端 App），你肯定还是需要一些自定服务器端逻辑的，这种场景下 FaaS 函数会是不错的解决方案，尤其是当它作为扩展和你现有的 BaaS 服务整合在一起的时候，例如一些数据校验（防止身份伪造）的功能，或者需要大量计算的任务（图片、视频处理）。
+
+### 一些示例
+
+#### 界面驱动的应用（UI-driven applications）
+
+我们来设想一个传统的三层 C/S 架构，例如一个常见的电子商务应用（我能说这是个在线宠物商店么？），假设它服务端用 Java，客户端用 HTML/JavaScript：
+
+![](http://martinfowler.com/articles/serverless/ps.svg)
+
+在这个架构下客户端通常没什么功能，系统中的大部分逻辑——身份验证、页面导航、搜索、交易——都在服务端实现。
+
+把它改造成 Serverless 架构的话看起来会是这样：
+
+![](http://martinfowler.com/articles/serverless/sps.svg)
+
+这是张极度简化的图，但还是有相当多改变之处。请注意这并不是推荐架构迁移方式，我只是用这张图来展示 Serverless 中的一些概念：
+
+1. 我们移除了最初应用中的身份验证逻辑，换用一个第三方的 BaaS 服务。
+2. 另一个 BaaS 示例：我们允许客户端直接访问一部分数据库内容，这部分数据完全由第三方托管（如 AWS Dynamo），这里我们会用一些安全配置来管理客户端访问相应数据的权限。
+3. 前面两点已经隐含了非常重要的第三点：先前服务器端的部分逻辑已经转移到了客户端，如保持用户 Session、理解应用的 UX 结构（做页面导航）、获取数据并渲染出用户界面等等。客户端实际上已经在逐步演变为[单页应用](https://en.wikipedia.org/wiki/Single-page_application)。
+4. 还有一些任务需要保留在服务器上，比如繁重的计算任务或者需要访问大量数据的操作。这里以“搜索”为例，搜索功能可以从持续运行的服务端中拆分出来，以 FaaS 的方式实现，从 API 网关（后文做详细解释）接收请求返回响应。这个服务器端函数可以和客户端一样，从同一个数据库读取产品数据。
+  我们原始的服务器端是用 Java 写的，而 AWS Lambda（假定我们用的这家 FaaS 平台）也支持 Java，那么原先的搜索代码略作修改就能实现这个搜索函数。
+5. 最后我们还可以把“购买”功能改写为另一个 FaaS 函数，出于安全考虑它需要在服务器端，而非客户端实现。它同样经由 API 网关暴露给外部使用。
+
+#### 消息驱动的应用（Message-driven applications）
+
+再举一个后端数据处理服务的例子。假设你在做一个需要快速响应 UI 的用户中心应用，同时你又想捕捉记录所有的用户行为。设想一个在线广告系统，当用户点击了广告你需要立刻跳转到广告目标，同时你还需要记录这次点击以便向广告客户收费（这个例子并非虚构，我的一位前同事最近就在做这项重构）。
+
+传统的架构会是这样：“广告服务器”同步响应用户的点击，同时发送一条消息给“点击处理应用”，异步地更新数据库（例如从客户的账户里扣款）。
+
+![](http://martinfowler.com/articles/serverless/cp.svg)
+
+在 Serverless 架构下会是这样：
+
+![](http://martinfowler.com/articles/serverless/scp.svg)
+
+这里两个架构的差异比我们上一个例子要小很多。我们把一个长期保持在内存中待命的任务替换为托管在第三方平台上以事件驱动的 FaaS 函数。注意这个第三方平台提供了消息代理和 FaaS 执行环境，这两个紧密相关的系统。
+
+### 解构 “Function as a Service”
+
+我们已经提到多次 FaaS 的概念，现在来挖掘下它究竟是什么含义。先来看看 Amazon 的 Lambda [产品简介](https://aws.amazon.com/cn/lambda/)：
+
+> 通过 AWS Lambda，无需配置或管理服务器**(1)**即可运行代码。您只需按消耗的计算时间付费 – 代码未运行时不产生费用。借助 Lambda，您几乎可以为任何类型的应用程序或后端服务**(2)**运行代码，而且全部无需管理。只需上传您的代码，Lambda 会处理运行**(3)**和扩展高可用性**(4)**代码所需的一切工作。您可以将您的代码设置为自动从其他 AWS 服务**(5)**触发，或者直接从任何 Web 或移动应用程序**(6)**调用。
+
+1. **本质上 FaaS 就是无需配置或管理你自己的服务器系统或者服务器应用即可运行后端代码**，其中第二项——服务器应用——是个关键因素，使其区别于现今其他一些流行的架构趋势如容器或者 PaaS（Platform as a Service）。
+回顾前面点击处理的例子，FaaS 替换掉了点击处理服务器（可能跑在一台物理服务器或者容器中，但绝对是一个独立的应用程序），它不需要服务器，也没有一个应用程序在持续运行。
+
+2. FaaS 不需要代码基于特定的库或框架，从语言或环境的层面来看 FaaS 就是一个普通的应用程序。例如 AWS Lambda 支持 JavaScript、Python 以及任意 JVM 语言（Java、Clojure、Scala 等），并且你的 FaaS 函数还可以调用任何一起部署的程序，也就是说实际上你可以用任何能编译为 Unix 程序的语言（稍后我们会讲到 Apex）。FaaS 也有一些不容忽视的局限，尤其是牵涉到状态和执行时长问题，这些我们稍后详谈。
+再次回顾一下点击处理的例子——代码迁移到 FaaS 唯一需要修改的是 main 方法（启动）的部分，删掉即可，也许还会有一些上层消息处理的代码（实现消息监听界面），不过这很可能只是方法签名上的小改动。所有其他代码（比如那些访问数据库的）都可以原样用在 FaaS 中。
+
+3. 既然我们没有服务器应用要执行，部署过程也和传统的方式大相径庭——把代码上传到 FaaS 平台，平台搞定所有其他事情。具体而言我们要做的就是上传新版的代码（zip 文件或者 jar 包）然后调用一个 API 来激活更新。
+
+4. 横向扩展是完全自动化、弹性十足、由 FaaS 平台供应商管理的。如果你需要并行处理 100 个请求，不用做任何处理系统可以自然而然地支持。FaaS 的“运算容器”会在运行时按需启动执行函数，飞快地完成并结束。
+回到我们的点击处理应用，假设某个好日子我们的客户点击广告的数量有平日的十倍之多，我们的点击处理应用能承载得住么？我们写的代码是否支持并行处理？支持的话，一个运行实例能够处理这么多点击量吗？如果环境允许多进程执行我们能自动支持或者手动配置支持吗？以 FaaS 实现你的代码需要一开始就以并行执行为默认前提，但除此之外就没有其他要求了，平台会完成所有的伸缩性需求。
+
+5. FaaS 中的函数通常都由平台指定的一些事件触发。在 AWS 上有 S3（文件）更新、时间（定时任务）、消息总线（[Kinesis](https://aws.amazon.com/kinesis/)）消息等，你的函数需要指定监听某个事件源。在点击处理器的例子中我们有个假设是已经采用了支持 FaaS 订阅的消息代理，如果没有的话这部分也需要一些代码量。
+
+6. 大部分的 FaaS 平台都支持 HTTP 请求触发函数执行，通常都是以某种 API 网关的形式实现（如 [AWS API Gateway](https://aws.amazon.com/api-gateway/)，[Webtask](https://webtask.io/)）。我们在宠物商店的例子中就以此来实现搜索和购买功能。
+
+### 状态
+
+当牵涉到本地（机器或者运行实例）状态时 FaaS 有个不能忽视的限制。简单点说就是你需要接受这么一个预设：函数调用中创建的所有中间状态或环境状态都不会影响之后的任何一次调用。这里的状态包括了内存数据和本地磁盘存储数据。从部署的角度换句话说就是 *FaaS 函数都是无状态的（Stateless）*。
+
+这对于应用架构有重大的影响，无独有偶，“Twelve-Factor App” 的概念也有[一模一样的要求](http://12factor.net/processes)。
+
+在此限制下的做法有多种，通常这个 FaaS 函数要么是天然无状态的——纯函数式地处理输入并且输出，要么使用数据库、跨应用缓存（如 Redis）或者网络文件系统（如 S3）来保存需要进一步处理的数据。
+
+### 执行时长
+
+FaaS 函数可以执行的时间通常都是受限的，目前 AWS Lambda 函数执行最长不能超过五分钟，否则会被强行终止。
+
+这意味着某些需要长时间执行的任务需要调整实现方法才能用于 FaaS 平台，例如你可能需要把一个原先长时间执行的任务拆分成多个协作的 FaaS 函数来执行。
+
+### 启动延迟
+
+目前你的 FaaS 函数响应请求的时间会受到大量因素的影响，可能从 10 毫秒到 2 分钟不等。这听起来很糟糕，不过我们来看看具体的情况，以 AWS Lambda 为例。
+
+如果你的函数是 JavaScript 或者 Python 的，并且代码量不是很大（千行以内），执行的消耗通常在 10 到 100 毫秒以内，大函数可能偶尔会稍高一些。
+
+如果你的函数实现在 JVM 上，会偶尔碰到 10 秒以上的 JVM 启动时间，不过这只会在两种情况下发生：
+
+- 你的函数调用触发比较稀少，两次调用间隔超过 10 分钟。
+- 流量突发峰值，比如通常每秒处理 10 个请求的任务在 10 秒内飙升到每秒 100 个。
+
+前一种情况可以用个 hack 来解决：每五分钟 ping 一次给函数保持热身。
+
+这些问题严重么？这要看你的应用类型和流量特征。我先前的团队有一个 Java 的异步消息处理 Lambda 应用每天处理数亿条消息，他们就完全不担心启动延迟的问题。如果你要写的是一个低延时的交易程序，目前而言肯定不会考虑 FaaS 架构，无论你是用什么语言。
+
+不论你是否认为你的应用会受此影响，都应该以生产环境级别的负载测试下实际性能情况。如果目前的情况还不能接受的话，可以几个月后再看看，因为这也是现在的 FaaS 平台供应商们主要集中精力在解决的问题。
+
+### API 网关
+
+![](http://martinfowler.com/articles/serverless/ag.svg)
+
+我们前面还碰到过一个 FaaS 的概念：“API 网关”。API 网关是一个配置了路由的 HTTP 服务器，每个路由对应一个 FaaS 函数，当 API 网关收到请求时它找到匹配请求的路由，调用相应的 FaaS 函数。通常 API 网关还会把请求参数转换成 FaaS 函数的调用参数。最后 API 网关把 FaaS 函数执行的结果返回给请求来源。
+
+AWS 有自己的一套 API 网关，其他平台也大同小异。
+
+除了纯粹的路由请求，API 网关还会负责身份认证、输入参数校验、响应代码映射等，你可能已经敏锐地意识到这是否合理，如果你有这个考虑的话，我们待会儿就谈。
+
+另一个应用 API 网关加 FaaS 的场景是创建无服务器的 http 前端微服务，同时又具备了 FaaS 函数的伸缩性、管理便利等优势。
+
+目前 API 网关的相关工具链还不成熟，尽管这是可行的但也要够大胆才能用。
+
+### 工具链
+
+前面关于工具链还不成熟的说法是指大体上 FaaS 无服务器架构平台的情况，也有例外，[Auth0 Webtask](https://webtask.io/) 就很重视改善开发者体验，[Tomasz Janczuk](https://twitter.com/tjanczuk) 在最近一届的 Serverless Conf 上做了精彩的展示。
+
+无服务器应用的监控和调试还是有点棘手，我们会在本文未来的更新中进一步探讨这一点。
+
+## 开源
+
+无服务器 FaaS 的一个主要好处就是只需要近乎透明的运行时启动调度，所以这个领域不像 Docker 或者容器领域那么依赖开源。未来肯定会有一些流行的 FaaS / API 网关平台实现可以跑在私有服务器或者开发者工作站上，[IBM 的 OpenWhisk](http://martinfowler.com/articles/serverless.html)
