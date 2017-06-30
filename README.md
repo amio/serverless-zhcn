@@ -1,7 +1,8 @@
 # 无服务器架构（Serverless Architectures）
 
-> 译注1：本文原文发表在 [martinfowler.com](http://martinfowler.com/) 上，对 Serverless 架构做了系统的阐述。为了便于参考，“Serverless”、“BaaS” 等术语文中不做翻译。  
-> 译注2：翻译中。原文太长，并且按照 martinfowler.com 的 bliki 模式保持更新，这里尽量保持跟进。
+> 译注：
+> - 翻译中。原文很长，并且按照 martinfowler.com 的 bliki 模式持续更新中，这里尽量保持跟进。
+> - 为了便于对照参考，“Serverless”、“BaaS” 等术语文中不做翻译。
 
 原文：http://martinfowler.com/articles/serverless.html  
 作者：[Mike Roberts](https://twitter.com/mikebroberts)
