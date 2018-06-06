@@ -162,13 +162,15 @@ AWS 有自己的一套 API 网关，其他平台也大同小异。
 
 既然 Serverless FaaS 这么像 12-Factor 应用，那不就是另一种形式的 Platform as a Service 么？就像 Heroku？对此借用 Adrian Cockcroft 一句非常简明的话：
 
-> 如果你的 PaaS 能在 20ms 内启动一个只运行半秒钟的实例，就叫它 Serverless。
+> 如果你的 PaaS 能在 20ms 内启动一个只运行半秒钟的实例，它就叫 Serverless。
 > — [Adrian Cockcroft](https://twitter.com/adrianco/status/736553530689998848)
 
-换句话说，大部分 PaaS 应用都不会为了每个请求都启动并结束整个应用，而 FaaS 就是这么做的。
+换句话说，大部分 PaaS 应用不会为了每个请求都启动并结束整个应用，而 FaaS 就是这么做的。
 
 好吧，然而假设我是个娴熟的 12-Factor 应用开发者，写代码的方式还是没有区别对么？没错，但是你如何**运维**是有很大不同的。鉴于我们都是 DevOps 工程师我们会在开发阶段就充分考虑运维，对吧？
 
-FaaS 和 PaaS 在运维上的关键区别是**伸缩性**。对于大多数 PaaS 平台而言你需要考虑
+FaaS 和 PaaS 在运维方面的关键区别是**伸缩性**（Scaling）。对于大多数 PaaS 平台而言你需要考虑如何伸缩，例如在 Heroku 上你要用到多少 Dyno 实例？对于 FaaS 应用这一步骤是完全透明的。即便你将 PaaS 配置为自动伸缩，也无法精细到单个请求级别，除非你有一个非常明确稳定的流量曲线可以针对性地配置。所以 FaaS 应用在成本方面要高效得多。
+
+既然如此，何必还用 PaaS？有很多原因，最主要的因素应该是工具链成熟度。另外像[Cloud Foundry](https://en.wikipedia.org/wiki/Cloud_Foundry) 能够给混合云和私有云的开发提供一致体验，在写就本文的时候 FaaS 还没有这么成熟的平台。
 
 **未完待续**
