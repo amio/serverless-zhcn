@@ -173,4 +173,16 @@ FaaS 和 PaaS 在运维方面的关键区别是**伸缩性**（Scaling）。对�
 
 既然如此，何必还用 PaaS？有很多原因，最主要的因素应该是工具链成熟度。另外像[Cloud Foundry](https://en.wikipedia.org/wiki/Cloud_Foundry) 能够给混合云和私有云的开发提供一致体验，在写就本文的时候 FaaS 还没有这么成熟的平台。
 
+### 对比容器
+
+使用 Serverless FaaS 的好处之一是避免在操作系统层面管理应用程序进程。有一些 PaaS 平台如 Heroku 也提供了这样的特性；另一种对进程的抽象是容器，这类技术的代表是 [Docker](https://www.docker.com/)。容器托管系统（Mesos、Kubernetes 等）把应用从系统级开发中抽象出来，这种做法日渐流行，甚至在此之上云服务商的容器平台（如 [Amazon ECS](https://aws.amazon.com/ecs/)、[EKS](https://aws.amazon.com/eks/)、[Google Cloud Engine](https://cloud.google.com/container-engine)）也像 Serverless FaaS 一样允许团队从管理主机中完全解放出来。在这股容器大潮中，FaaS 是否还有优势？
+
+概念上来说前面对 PaaS 的论断仍旧适用于容器。Serverless FaaS 的伸缩性是**完全自动化、透明、良好组织**的，并且自动进行资源监控和分配；而容器平台仍旧需要你对容量和集群进行管理。
+
+另外我还得说容器技术也处在不够成熟和稳定的阶段，尽管它越来越接近了。当然这不是说 Serverless 就成熟了，但你终究需要在两个都属前沿的技术方向中做出选择。
+
+还有个值得一提的是不少容器平台支持了自动伸缩的容器集群，Kubernetes 有内建的 [Horizontal Pod Autoscaling](http://kubernetes.io/docs/user-guide/horizontal-pod-autoscaling/) 功能，[AWS Fargate](https://aws.amazon.com/fargate/) 则承诺会有“Serverless 容器”。
+
+总的来说 Serverless FaaS 和托管容器在管理和伸缩性方面的差别已经不大，在它们之间的取舍更多看风格取向和应用的类型。例如事件驱动的应用组件更适合用 FaaS 实现，而同步请求驱动的应用组件更适合用容器实现。我预计很快就会有不少团队和应用同时采用这两种架构模式，期待看它们会擦出怎样的火花。
+
 **未完待续**
