@@ -180,4 +180,14 @@ FaaS 和 PaaS 在运维方面的关键区别是**伸缩性**（Scaling）。对�
 
 总的来说 Serverless FaaS 和托管容器在管理和伸缩性方面的差别已经不大，在它们之间的取舍更多看风格取向和应用的类型。例如事件驱动的应用组件更适合用 FaaS 实现，而同步请求驱动的应用组件更适合用容器实现。我预计很快就会有不少团队和应用同时采用这两种架构模式，期待看它们会擦出怎样的火花。
 
+### 对比 NoOps
+
+Serverless 并非“零运维”——尽管它可能是“无系统管理员”，也要看你在这个 Serverless 的兔子洞里走多深。
+
+“运维”的意义远不止系统管理，它还包括并不限于监控、部署、安全、网络、支持、生产环境调试以及系统伸缩。这些事务同样存在于 Serverless 应用中，你仍旧需要相应的方法处理它们。某些情况下 Serverless 的运维会更难一些，毕竟它还是个崭新的技术。
+
+系统管理的工作仍然要做，你只是把它外包给了 Serverless 环境。这既不能说坏也不能说好——我们外包了大量的内容，是好是坏要看具体情况。不论怎样，某些时候这层抽象也会发生问题，就会需要一个来自某个地方的人类系统管理员来支持你的工作了。
+
+[Charity Majors](https://twitter.com/mipsytipsy) 在第一届 Serverless 大会上就这个主题做了个[非常不错的演讲](https://www.youtube.com/watch?v=wgT5f0eBhD8)，也可以看看她相关的两篇文章：[WTF is operations?](https://charity.wtf/2016/05/31/wtf-is-operations-serverless/) 和 [Operational Best Practices](https://charity.wtf/2016/05/31/operational-best-practices-serverless/)）。
+
 **未完待续**
