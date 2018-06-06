@@ -1,17 +1,22 @@
 # 无服务器架构（Serverless Architectures）
 
 > 译注：
-> - 翻译中。原文很长，并且按照 martinfowler.com 的 bliki 模式持续更新中，这里尽量保持跟进。
+> - 按照 martinfowler.com 的 bliki 模式持续更新中，这里尽量保持跟进，如有疏漏敬请指出。
 > - 为了便于对照参考，“Serverless”、“BaaS” 等术语文中不做翻译。
+> - 原文很长，这里分成几个章节逐步翻译。计划目录如下：
+>   1. 什么是 Serverless
+>   2. 什么不是 Serverless
+>   3. 长处和短处
+>   4. Serverless 的未来
 
-原文：http://martinfowler.com/articles/serverless.html  
+原文：http://martinfowler.com/articles/serverless.html
 作者：[Mike Roberts](https://twitter.com/mikebroberts)
+
+> 无服务器架构（Serverless architectures）是指一个应用很大程度地依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统永远保持开机的系统应用组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段相对没那么成熟的支持环境。
 
 ## 引言
 
-> Serverless architectures refer to applications that significantly depend on third-party services (knows as Backend as a Service or "BaaS") or on custom code that's run in ephemeral containers (Function as a Service or "FaaS"), the best known vendor host of which currently is AWS Lambda. By using these ideas, and by moving much behavior to the front end, such architectures remove the need for the traditional 'always on' server system sitting behind an application. Depending on the circumstances, such systems can significantly reduce operational cost and complexity at a cost of vendor dependencies and (at the moment) immaturity of supporting services.
-
-Severless 现在是软件架构圈中的热门话题，涌现出了数不清的相关书籍、开源框架、商业产品，甚至还有专注于这个话题的[大会](http://serverlessconf.io/)。什么是 Serverless？它有那些特性值得/不值得考量？通过[持续更新](http://martinfowler.com/bliki/EvolvingPublication.html)的本文，我希望对这些问题做出解答。
+Severless 现在是软件架构圈中的热门话题，三大云计算供应商（Amazon、Google 和 Microsoft）都在大力投入 Serverless，涌现出了不计其数的相关书籍、开源框架、商业产品，甚至还有专注于这个话题的[大会](http://serverlessconf.io/)。那么到底什么是 Serverless？它有什么长处/短处？我希望通过本文对这些问题提供一些启发。
 
 开篇我们先来看看 Serverless 是什么，之后我会尽我所能中立地谈谈它的优势和缺点。
 
