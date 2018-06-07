@@ -1,5 +1,14 @@
----
----
-
 @import "{{ site.theme }}";
 @import "https://markdowncss.github.io/splendor/css/splendor.css";
+
+p {
+  line-height: 1.8em;
+}
+
+.markdown-body blockquote {
+  padding: 0.5em;
+}
+
+blockquote p {
+  font-size: 1.2em;
+}

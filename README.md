@@ -1,13 +1,9 @@
 # 无服务器架构（Serverless Architectures）
 
-> 译注：
-> - 按照 martinfowler.com 的 bliki 模式持续更新中，这里尽量保持跟进，如有疏漏敬请指出。
-> - 为了便于对照参考，“Serverless”、“BaaS” 等术语不做翻译。
+原文：[http://martinfowler.com/articles/serverless.html](http://martinfowler.com/articles/serverless.html)  
+作者：[Mike Roberts](https://twitter.com/mikebroberts)
 
-- 原文：http://martinfowler.com/articles/serverless.html
-- 作者：[Mike Roberts](https://twitter.com/mikebroberts)
-
-> 无服务器架构（Serverless architectures）是指一个应用很大程度地依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统应用中永远保持在线的系统组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段相对没那么成熟的支持环境。
+*无服务器架构（Serverless architectures）是指一个应用很大程度地依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统应用中永远保持在线的系统组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段相对没那么成熟的支持环境。*
 
 ## 引言
 
@@ -71,7 +67,7 @@
 
 我们已经提到多次 FaaS 的概念，现在来挖掘下它究竟是什么含义。先来看看 Amazon 的 Lambda [产品简介](https://aws.amazon.com/cn/lambda/)：
 
-> 通过 AWS Lambda，无需配置或管理服务器**(1)**即可运行代码。您只需按消耗的计算时间付费 – 代码未运行时不产生费用。借助 Lambda，您几乎可以为任何类型的应用程序或后端服务**(2)**运行代码，而且全部无需管理。只需上传您的代码，Lambda 会处理运行**(3)**和扩展高可用性**(4)**代码所需的一切工作。您可以将您的代码设置为自动从其他 AWS 服务**(5)**触发，或者直接从任何 Web 或移动应用程序**(6)**调用。
+_通过 AWS Lambda，无需配置或管理服务器**(1)**即可运行代码。您只需按消耗的计算时间付费 – 代码未运行时不产生费用。借助 Lambda，您几乎可以为任何类型的应用程序或后端服务**(2)**运行代码，而且全部无需管理。只需上传您的代码，Lambda 会处理运行**(3)**和扩展高可用性**(4)**代码所需的一切工作。您可以将您的代码设置为自动从其他 AWS 服务**(5)**触发，或者直接从任何 Web 或移动应用程序**(6)**调用。_
 
 1. **本质上 FaaS 就是无需配置或管理你自己的服务器系统或者服务器应用即可运行后端代码**，其中第二项——服务器应用——是个关键因素，使其区别于现今其他一些流行的架构趋势如容器或者 PaaS（Platform as a Service）。
 回顾前面点击处理的例子，FaaS 替换掉了点击处理服务器（可能跑在一台物理服务器或者容器中，但绝对是一个独立的应用程序），它不需要服务器，也没有一个应用程序在持续运行。
@@ -195,7 +191,7 @@ Serverless 并非“零运维”——尽管它可能是“无系统管理员”
 还有一种说法把 Serverless FaaS 看做“存储过程即服务（Stored Procedures as a Service）”，我想原因是很多 FaaS 函数示例都是数据库访问。如果这就是它的所有用途，我想这个名字也不坏，不过终究这只是 FaaS 的一个子集而已，这样去考虑 FaaS 局限了它的能力。
 
 > 我好奇 Serverless 会不会最终变成类似存储过程那样的东西，开始是个好主意，然后迅速演变成大规模技术债务。
-> Camille Fournier [@skamille](https://twitter.com/skamille/status/719583067275403265)
+> — [Camille Fournier](https://twitter.com/skamille/status/719583067275403265)
 
 不过考虑下 FaaS 是否会导致跟存储过程类似的问题是有价值的，包括 Camille 提到的技术债问题。有很多存储过程给我们的教训值得放在 FaaS 场景下重新审视，存储过程的问题：
 
