@@ -12,13 +12,15 @@
   line-height: 1.8em;
   color: #444;
 
-  h1:first-child {
+  h1:not([id]) {
     font-size: 1rem;
+    padding-top: 4px;
+    line-height: 1.4rem;
     text-align: center;
-    margin-top: -25px !important;
     position: absolute;
     width: 100vw;
     left: 0;
+    top: 0;
   }
 
   h1, h2, h3, h4, h5, h6 {

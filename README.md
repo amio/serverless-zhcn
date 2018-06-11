@@ -1,7 +1,7 @@
 # 无服务器架构（Serverless Architectures）
 
 [![amio/serverless-zhcn](https://badgen.now.sh/badge/GitHub/amio%2Fserverless-zhcn/37F)](https://github.com/amio/serverless-zhcn)  
-原文：[http://martinfowler.com/articles/serverless.html](http://martinfowler.com/articles/serverless.html)  
+原文：[https://martinfowler.com/articles/serverless.html](https://martinfowler.com/articles/serverless.html)  
 作者：[Mike Roberts](https://twitter.com/mikebroberts)
 
 *无服务器架构（Serverless architectures）是指一个应用很大程度地依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统应用中永远保持在线的系统组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段仍有待成熟的支持环境。*
@@ -25,7 +25,7 @@
 
 BaaS 和 FaaS 在运维层面有类似之处（都无需管理硬件资源），并且也经常配合使用。主流的云服务商都会提供一套“Serverless 全家桶”，囊括了 BaaS 和 FaaS 产品——例如 Amazon 的 Serverless 产品介绍，Google 的 Firebase 服务也紧密集成了 Google Cloud Functions。
 
-对小公司而言这两个领域也有交叉，[Auth0](https://auth0.com/) 最初是一个 BaaS 产品，提供用户管理的各种服务，他们后来创建了配套的 FaaS 服务：[Auth0 Webtask](https://webtask.io/)，并且将此概念进一步延伸推出了 [Extend](https://auth0.com/extend/)，支持其他 BaaS 和 SaaS 公司能够轻松地在现有产品中加入 FaaS 能力。
+对小公司而言这两个领域也有交叉，[Auth0](https://auth0.com/) 最初是一个 BaaS 产品，提供用户管理的各种服务，他们后来创建了配套的 FaaS 服务 [Webtask](https://webtask.io/)，并且将此概念进一步延伸推出了 [Extend](https://auth0.com/extend/)，支持其他 BaaS 和 SaaS 公司能够轻松地在现有产品中加入 FaaS 能力。
 
 ### 一些示例
 
