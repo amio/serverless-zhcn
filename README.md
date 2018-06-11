@@ -1,5 +1,6 @@
 # 无服务器架构（Serverless Architectures）
 
+[![amio/serverless-zhcn](https://badgen.now.sh/badge/GitHub/amio%2Fserverless-zhcn/37F)](https://github.com/amio/serverless-zhcn)  
 原文：[http://martinfowler.com/articles/serverless.html](http://martinfowler.com/articles/serverless.html)  
 作者：[Mike Roberts](https://twitter.com/mikebroberts)
 
