@@ -3,7 +3,7 @@
 原文：[http://martinfowler.com/articles/serverless.html](http://martinfowler.com/articles/serverless.html)  
 作者：[Mike Roberts](https://twitter.com/mikebroberts)
 
-*无服务器架构（Serverless architectures）是指一个应用很大程度地依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统应用中永远保持在线的系统组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段相对没那么成熟的支持环境。*
+*无服务器架构（Serverless architectures）是指一个应用很大程度地依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统应用中永远保持在线的系统组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段仍有待成熟的支持环境。*
 
 ## 引言
 
@@ -15,16 +15,16 @@
 
 就像软件行业中的很多趋势一样，Serverless 的界限并不是特别清晰，尤其是它还涵盖了两个互相有重叠的概念：
 
-- Serverless 最早用于描述那些大部分或者完全依赖于第三方（云端）应用或服务来管理服务器端逻辑和状态的应用，这些应用通常是富客户端应用（单页应用或者移动端 App），建立在云端服务生态之上，包括数据库（Parse、Firebase）、账号系统（Auth0、AWS Cognito）等。这些服务最早被称为 [“(Mobile) Backend as a Service”](https://en.wikipedia.org/wiki/Mobile_backend_as_a_service)，下文将对此简称为 “**BaaS**”。
-- Serverless 还可以指代这种情况：应用的一部分服务端逻辑依然由开发者完成，但是不像传统架构那样运行在一个无状态的计算容器中，而是由事件驱动、短时执行（甚至只有一次调用）、完全由第三方管理（感谢 ThoughtWorks 在他们最近的“[技术观察](https://www.thoughtworks.com/radar/techniques/serverless-architecture)”中对此所做的定义）。对此有一个叫法是 [Functions as a service](https://twitter.com/marak/status/736357543598002176) / FaaS。[AWS Lambda](https://aws.amazon.com/lambda/) 是目前的热门 FaaS 实现之一，下文将对此简称为 “**FaaS**”。
+- Serverless 最早用于描述那些大部分或者完全依赖于第三方（云端）应用或服务来管理服务器端逻辑和状态的应用，这些应用通常是富客户端应用（单页应用或者移动端 App），建立在云服务生态之上，包括数据库（Parse、Firebase）、账号系统（Auth0、AWS Cognito）等。这些服务最早被称为 [“(Mobile) Backend as a Service”](https://en.wikipedia.org/wiki/Mobile_backend_as_a_service)，下文将对此简称为 “**BaaS**”。
+- Serverless 还可以指这种情况：应用的一部分服务端逻辑依然由开发者完成，但是和传统架构不同，它运行在一个无状态的计算容器中，由事件驱动、生命周期很短（甚至只有一次调用）、完全由第三方管理（感谢 ThoughtWorks 在他们最近的“[技术观察](https://www.thoughtworks.com/radar/techniques/serverless-architecture)”中对此所做的定义）。这种情况称为 [Functions as a service](https://twitter.com/marak/status/736357543598002176) / FaaS。[AWS Lambda](https://aws.amazon.com/lambda/) 是目前的热门 FaaS 实现之一，下文将对此简称为 “**FaaS**”。
 
-【边栏注释：Serverless 的起源】
+【边栏注释：“Serverless” 术语的起源】
 
-我接下来要谈的主要是第二种情况，因为这个概念更新颖，也和我们传统考虑的技术架构大相径庭，并且也是目前最被热炒的 Serverless 概念。
+本文将主要聚焦于 FaaS，不仅仅因为它是 Serverless 中最新也最热门的领域，更重要的是它和我们传统技术架构思路的显著不同。
 
-不过这些概念实际上是相关、甚至有交叉的。[Auth0](https://auth0.com/) 就是个好例子——他们最初是一个 BaaS 服务：“Authentication as a Service”，但是随着 [Auth0 Webtask](https://webtask.io/) 的推出，他们也进入了 FaaS 的领域。
+BaaS 和 FaaS 在运维层面有类似之处（都无需管理硬件资源），并且也经常配合使用。主流的云服务商都会提供一套“Serverless 全家桶”，囊括了 BaaS 和 FaaS 产品——例如 Amazon 的 Serverless 产品介绍，Google 的 Firebase 服务也紧密集成了 Google Cloud Functions。
 
-并且在很多情况下，开发一个 “BaaS” 应用尤其是富 Web 应用（相对于移动端 App），你肯定还是需要一些自定服务器端逻辑的，这种场景下 FaaS 函数会是不错的解决方案，尤其是当它作为扩展和你现有的 BaaS 服务整合在一起的时候，例如一些数据校验（防止身份伪造）的功能，或者需要大量计算的任务（图片、视频处理）。
+对小公司而言这两个领域也有交叉，[Auth0](https://auth0.com/) 最初是一个 BaaS 产品，提供用户管理的各种服务，他们后来创建了配套的 FaaS 服务：[Auth0 Webtask](https://webtask.io/)，并且将此概念进一步延伸推出了 [Extend](https://auth0.com/extend/)，支持其他 BaaS 和 SaaS 公司能够轻松地在现有产品中加入 FaaS 能力。
 
 ### 一些示例
 
