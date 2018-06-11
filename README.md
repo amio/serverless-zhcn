@@ -188,23 +188,23 @@ Serverless 并非“零运维”——尽管它可能是“无系统管理员”
 
 ### 对比存储过程即服务
 
-还有一种说法把 Serverless FaaS 看做“存储过程即服务（Stored Procedures as a Service）”，我想原因是很多 FaaS 函数示例都是数据库访问。如果这就是它的所有用途，我想这个名字也不坏，不过终究这只是 FaaS 的一个子集而已，这样去考虑 FaaS 局限了它的能力。
+还有一种说法把 Serverless FaaS 看做“存储过程即服务（Stored Procedures as a Service）”，我想原因是很多 FaaS 函数示范都用数据库访问作为例子。如果这就是它的主要用途，我想这个名字也不坏，但终究这只是 FaaS 的一种用例而已，这样去考虑 FaaS 局限了它的能力。
 
 > 我好奇 Serverless 会不会最终变成类似存储过程那样的东西，开始是个好主意，然后迅速演变成大规模技术债务。
 > — [Camille Fournier](https://twitter.com/skamille/status/719583067275403265)
 
-不过考虑下 FaaS 是否会导致跟存储过程类似的问题是有价值的，包括 Camille 提到的技术债问题。有很多存储过程给我们的教训值得放在 FaaS 场景下重新审视，存储过程的问题：
+但我们仍然值得考虑 FaaS 是否会导致跟存储过程类似的问题，包括 Camille 提到的技术债。有很多存储过程给我们的教训可以放在 FaaS 场景下重新审视，存储过程的问题在于：
 
 1. 通常依赖于服务商指定的语言，或者至少是指定的语言框架/扩展
 2. 因为必须在数据库环境中执行所以很难测试
-3. 难以进行版本控制，或者作为应用进行管理
+3. 难以进行版本控制，或者作为应用包进行管理
 
-尽管不是所有存储过程的实现都有这些问题，但它们都是常见问题。我们看看是否适用于 FaaS：
+尽管不是所有存储过程的实现都有这些问题，但它们都是常会碰到的。我们看看是否适用于 FaaS：
 
-第一条就目前看来显然不是 FaaS 会需要担心的，直接排除。
+第一条就目前看来显然不是 FaaS 的烦恼，直接排除。
 
 第二条，因为 FaaS 函数都是纯粹的代码，所以应该和其他任何代码一样容易测试。整合测试是另一个问题，我们稍后展开细说。
 
-第三条，既然 FaaS 函数都是纯粹的代码，版本控制显然没问题；最近大家开始关心应用打包的问题，相关的工具链也开始日趋成熟，比如 Amazon 的 [Serverless Application Model](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html)（SAM）和前面提到的其他 Serverless 框架都提供了类似的功能。2018 年初 Amazon 还开放了 [Serverless Application Repository](https://aws.amazon.com/cn/serverless/serverlessrepo/)（SAR）服务，方便组织分发应用程序和组件，也是基于 AWS Serverless 服务构建的。关于 SAR 可以看看我的另一篇文章：[Examining the AWS Serverless Application Repository](https://blog.symphonia.io/examining-the-aws-serverless-application-repository-9ef316e2fd4)。
+第三条，既然 FaaS 函数都是纯粹的代码，版本控制自然不成问题；最近大家开始关心的应用打包，相关工具链也在日趋成熟，比如 Amazon 的 [Serverless Application Model](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html)（SAM）和前面提到的其他 Serverless 框架都提供了类似的功能。2018 年初 Amazon 还开放了 [Serverless Application Repository](https://aws.amazon.com/cn/serverless/serverlessrepo/)（SAR）服务，方便组织分发应用程序和组件，也是基于 AWS Serverless 服务构建的。关于 SAR 可以看看我的另一篇文章：[Examining the AWS Serverless Application Repository](https://blog.symphonia.io/examining-the-aws-serverless-application-repository-9ef316e2fd4)。
 
 **未完待续**
