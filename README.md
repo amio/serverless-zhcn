@@ -4,7 +4,7 @@
 原文：[https://martinfowler.com/articles/serverless.html](https://martinfowler.com/articles/serverless.html)  
 作者：[Mike Roberts](https://twitter.com/mikebroberts)
 
-*无服务器架构（Serverless architectures）是指一个应用很大程度地依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统应用中永远保持在线的系统组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段仍有待成熟的支持环境。*
+*无服务器架构（Serverless architectures）是指一个应用大量依赖第三方服务（后端即服务，Backend as a Service，简称“BaaS”），或者把代码交由托管的、短生命周期的容器中执行（函数即服务，Function as a Service，简称“FaaS”）。现在最知名的 FaaS 平台是 AWS Lambda。把这些技术和单页应用等相关概念相结合，这样的架构无需维护传统应用中永远保持在线的系统组件。Serverless 架构的长处是显著减少运维成本、复杂度、以及项目起步时间，劣势则在于更加依赖平台供应商和现阶段仍有待成熟的支持环境。*
 
 ## 引言
 
