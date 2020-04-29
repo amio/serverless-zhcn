@@ -33,13 +33,13 @@ BaaS 和 FaaS 在运维层面有类似之处（都无需管理硬件资源），
 
 我们来设想一个传统的三层 C/S 架构，例如一个常见的电子商务应用（比如在线宠物商店），假设它服务端用 Java，客户端用 HTML/JavaScript：
 
-![](http://martinfowler.com/articles/serverless/ps.svg)
+![](https://martinfowler.com/articles/serverless/ps.svg)
 
 在这个架构下客户端通常没什么功能，系统中的大部分逻辑——身份验证、页面导航、搜索、交易——都在服务端实现。
 
 把它改造成 Serverless 架构的话会是这样：
 
-![](http://martinfowler.com/articles/serverless/sps.svg)
+![](https://martinfowler.com/articles/serverless/sps.svg)
 
 这是张大幅简化的架构图，但还是有相当多变化之处：
 
@@ -56,11 +56,11 @@ BaaS 和 FaaS 在运维层面有类似之处（都无需管理硬件资源），
 
 传统的架构会是这样：“广告服务器”同步响应用户的点击，同时发送一条消息给“点击处理应用”，异步地更新数据库（例如从客户的账户里扣款）。
 
-![](http://martinfowler.com/articles/serverless/cp.svg)
+![](https://martinfowler.com/articles/serverless/cp.svg)
 
 在 Serverless 架构下会是这样：
 
-![](http://martinfowler.com/articles/serverless/scp.svg)
+![](https://martinfowler.com/articles/serverless/scp.svg)
 
 这里两个架构的差异比我们上一个例子要小很多。我们把一个长期保持在内存中待命的任务替换为托管在第三方平台上以事件驱动的 FaaS 函数。注意这个第三方平台提供了消息代理和 FaaS 执行环境，这两个紧密相关的系统。
 
@@ -89,7 +89,7 @@ _通过 AWS Lambda，无需配置或管理服务器**(1)**即可运行代码。�
 
 当牵涉到本地（机器或者运行实例）状态时 FaaS 有个不能忽视的限制。简单点说就是你需要接受这么一个预设：函数调用中创建的所有中间状态或环境状态都不会影响之后的任何一次调用。这里的状态包括了内存数据和本地磁盘存储数据。从部署的角度换句话说就是 *FaaS 函数都是无状态的（Stateless）*。
 
-这对于应用架构有重大的影响，无独有偶，“Twelve-Factor App” 的概念也有[一模一样的要求](http://12factor.net/processes)。
+这对于应用架构有重大的影响，无独有偶，“Twelve-Factor App” 的概念也有[一模一样的要求](https://12factor.net/processes)。
 
 在此限制下的做法有多种，通常这个 FaaS 函数要么是天然无状态的——纯函数式地处理输入并且输出，要么使用数据库、跨应用缓存（如 Redis）或者网络文件系统（如 S3）来保存需要进一步处理的数据。
 
@@ -118,7 +118,7 @@ FaaS 函数可以执行的时间通常都是受限的，目前 AWS Lambda 函数
 
 ### API 网关
 
-![API Gateway](http://martinfowler.com/articles/serverless/ag.svg)
+![API Gateway](https://martinfowler.com/articles/serverless/ag.svg)
 
 我们前面还碰到过一个 FaaS 的概念：“API 网关”。API 网关是一个配置了路由的 HTTP 服务器，每个路由对应一个 FaaS 函数，当 API 网关收到请求时它找到匹配请求的路由，调用相应的 FaaS 函数。通常 API 网关还会把请求参数转换成 FaaS 函数的调用参数。最后 API 网关把 FaaS 函数执行的结果返回给请求来源。
 
@@ -138,7 +138,7 @@ AWS 有自己的一套 API 网关，其他平台也大同小异。
 
 ### 开源
 
-无服务器 FaaS 的一个主要好处就是只需要近乎透明的运行时启动调度，所以这个领域不像 Docker 或者容器领域那么依赖开源实现。未来肯定会有一些流行的 FaaS / API 网关平台实现可以跑在私有服务器或者开发者工作站上，[IBM 的 OpenWhisk](http://martinfowler.com/articles/serverless.html) 就是一个这样的实现，不知道它是否能成为流行选择，接下来的时间里肯定会有更多竞争者出现。
+无服务器 FaaS 的一个主要好处就是只需要近乎透明的运行时启动调度，所以这个领域不像 Docker 或者容器领域那么依赖开源实现。未来肯定会有一些流行的 FaaS / API 网关平台实现可以跑在私有服务器或者开发者工作站上，[IBM 的 OpenWhisk](https://openwhisk.apache.org/) 就是一个这样的实现，不知道它是否能成为流行选择，接下来的时间里肯定会有更多竞争者出现。
 
 除了运行时的平台实现，还是有不少开源工具用以辅助开发和部署的，例如 [Serverless Framework](https://github.com/serverless/serverless) 在 API 网关 + Lambda 的易用性上就比它的原创者 AWS 要好很多，这是一个 JS 为主的项目，如果你在写一个 JS 网关应用一定要去了解下。
 
@@ -173,7 +173,7 @@ FaaS 和 PaaS 在运维方面的关键区别是**伸缩性**（Scaling）。对�
 
 另外我还得说容器技术也处在不够成熟和稳定的阶段，尽管它越来越接近了。当然这不是说 Serverless 就成熟了，但你终究需要在两个都属前沿的技术方向中做出选择。
 
-还有个值得一提的是不少容器平台支持了自动伸缩的容器集群，Kubernetes 有内建的 [Horizontal Pod Autoscaling](http://kubernetes.io/docs/user-guide/horizontal-pod-autoscaling/) 功能，[AWS Fargate](https://aws.amazon.com/fargate/) 则承诺会有“Serverless 容器”。
+还有个值得一提的是不少容器平台支持了自动伸缩的容器集群，Kubernetes 有内建的 [Horizontal Pod Autoscaling](https://kubernetes.io/docs/user-guide/horizontal-pod-autoscaling/) 功能，[AWS Fargate](https://aws.amazon.com/fargate/) 则承诺会有“Serverless 容器”。
 
 总的来说 Serverless FaaS 和托管容器在管理和伸缩性方面的差别已经不大，在它们之间的取舍更多看风格取向和应用的类型。例如事件驱动的应用组件更适合用 FaaS 实现，而同步请求驱动的应用组件更适合用容器实现。我预计很快就会有不少团队和应用同时采用这两种架构模式，期待看它们会擦出怎样的火花。
 
